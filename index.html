@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מחולל תרגילי פוסטים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Heebo',sans-serif}
+body{background:#0a0a0a;min-height:100vh;direction:rtl;color:#e5e7eb}
+.container{max-width:520px;margin:0 auto;padding:16px}
+.gradient-text{background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card{background:#1a1a2e;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.3);margin-bottom:14px;border:1px solid #2a2a3e}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;transition:all .2s}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 15px rgba(124,58,237,.4)}
+.btn-pink{background:linear-gradient(135deg,#db2777,#be185d);color:#fff;box-shadow:0 2px 8px rgba(219,39,119,.3)}
+.btn-pink:hover:not(:disabled){transform:translateY(-1px)}
+.btn-outline{background:transparent;color:#a78bfa;border:2px solid #a78bfa}
+.btn-outline:hover{background:rgba(167,139,250,.1)}
+.btn-ghost{background:none;color:#6b7280;padding:8px 12px;font-size:13px}
+.btn-ghost:hover{color:#a78bfa}
+.btn-block{width:100%}
+.btn-row{display:flex;gap:8px}
+label{display:block;font-size:13px;font-weight:700;color:#9ca3af;margin-bottom:4px}
+select{width:100%;padding:12px 14px;border:2px solid #2a2a3e;border-radius:12px;font-size:15px;font-family:'Heebo',sans-serif;direction:rtl;background:#111;color:#e5e7eb;cursor:pointer;transition:border .2s;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center}
+select:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+input[type="password"],input[type="text"]{width:100%;padding:12px 14px;border:2px solid #2a2a3e;border-radius:12px;font-size:15px;font-family:'Heebo',sans-serif;direction:rtl;background:#111;color:#e5e7eb;transition:border .2s}
+input[type="password"]:focus,input[type="text"]:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.screen{display:none}.screen.active{display:block}
+.tab-nav{display:flex;gap:4px;background:#111;border-radius:10px;padding:4px;margin-bottom:14px;border:1px solid #1f1f2f}
+.tab-nav button{flex:1;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;background:transparent;color:#6b7280;transition:all .2s}
+.tab-nav button.active{background:#1a1a2e;color:#a78bfa;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.empty-state{text-align:center;padding:40px 20px}
+.empty-state .empty-icon{font-size:56px;margin-bottom:12px}
+.exercise-image{border-radius:12px;overflow:hidden;margin-bottom:14px;background:#111;min-height:100px}
+.exercise-image img{width:100%;display:block;border-radius:12px}
+.variation-card{background:#111;border:2px solid #2a2a3e;border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.variation-card:hover{border-color:#7c3aed}
+.variation-card.selected{border-color:#a78bfa;background:#1a1a2e;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.var-num{display:inline-block;background:#7c3aed;color:#fff;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:700;margin-left:6px}
+.var-header{display:flex;align-items:center;margin-bottom:6px}
+.var-title{font-weight:700;font-size:14px;color:#f3f4f6}
+.var-sub{font-size:13px;color:#9ca3af;margin-bottom:2px}
+.var-body{font-size:13px;color:#d1d5db;line-height:1.5;margin-bottom:2px}
+.var-cta{font-size:13px;color:#f472b6;font-weight:600}
+.var-fine{font-size:11px;color:#6b7280}
+.library-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.library-item{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.library-item:hover{border-color:#7c3aed}
+.library-item img{width:100%;height:100%;object-fit:cover}
+.library-item .cat-badge{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.8);color:#e5e7eb;font-size:10px;padding:3px 6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.library-item .delete-btn{position:absolute;top:4px;left:4px;background:rgba(239,68,68,.85);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
+.library-item:hover .delete-btn{display:flex}
+.drop-zone{border:2px dashed #7c3aed;border-radius:14px;padding:30px;text-align:center;color:#a78bfa;cursor:pointer;transition:all .2s;background:rgba(124,58,237,.05);margin-bottom:14px}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#a78bfa;background:rgba(124,58,237,.1)}
+.drop-zone input{display:none}
+.cat-select-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000}
+.cat-select-modal .modal-card{background:#1a1a2e;border-radius:16px;padding:24px;width:90%;max-width:400px;max-height:80vh;overflow-y:auto;direction:rtl;border:1px solid #2a2a3e}
+.cat-select-modal .cat-option{display:block;width:100%;padding:10px 14px;margin-bottom:6px;border:2px solid #2a2a3e;border-radius:10px;background:#111;color:#e5e7eb;font-size:14px;font-family:'Heebo',sans-serif;cursor:pointer;text-align:right;transition:all .15s}
+.cat-select-modal .cat-option:hover{border-color:#7c3aed;background:rgba(124,58,237,.1)}
+.stats-row{display:flex;gap:8px;margin-bottom:14px}
+.stat-box{flex:1;background:#111;border-radius:10px;padding:10px;text-align:center;border:1px solid #1f1f2f}
+.stat-num{font-size:22px;font-weight:900;color:#a78bfa}
+.stat-label{font-size:11px;color:#6b7280}
+.export-card{background:#0a0a0a;border-radius:16px;overflow:hidden;direction:rtl;width:100%}
+.export-header{padding:14px 20px;font-size:18px;font-weight:900;color:#fff;text-align:center;background:linear-gradient(135deg,#7c3aed,#db2777)}
+.export-image-wrap{width:100%;max-height:300px;overflow:hidden}
+.export-image-wrap img{width:100%;display:block;object-fit:cover}
+.export-fields{padding:20px}
+.export-field{margin-bottom:14px}
+.export-field:last-child{margin-bottom:0}
+.export-label{display:block;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.export-value{display:block;color:#f9fafb;font-size:15px;line-height:1.6}
+.export-cta{color:#c084fc;font-weight:700;font-size:16px}
+.export-body{font-size:14px;color:#d1d5db}
+.export-fine{font-size:12px;color:#6b7280;font-style:italic}
+.export-footer{padding:12px 20px;text-align:center;color:#4b5563;font-size:11px;border-top:1px solid #1f2937}
+.error-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px;color:#fca5a5;font-size:13px;margin-bottom:12px}
+.success-box{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:12px;color:#6ee7b7;font-size:13px;margin-bottom:12px}
+.info-box{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:10px;padding:12px;font-size:12px;color:#c4b5fd;line-height:1.7}
+.info-box strong{color:#a78bfa}
+.btn-copy{background:#1a1a2e;color:#e5e7eb;border:2px solid #2a2a3e}
+.btn-copy:hover{background:#222}
+.btn-copy.copied{background:#10b981;color:#fff;border-color:#10b981}
+.fade-in{animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.admin-badge{display:inline-block;background:#f59e0b;color:#000;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:6px}
+.admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:8px 12px;background:#111;border-radius:10px;border:1px solid #1f1f2f}
+.admin-topbar .admin-exit{background:none;border:1px solid #6b7280;color:#9ca3af;font-size:12px;padding:4px 12px;border-radius:8px;cursor:pointer;font-family:'Heebo',sans-serif}
+.admin-topbar .admin-exit:hover{border-color:#f472b6;color:#f472b6}
+/* Password modal */
+.pass-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:2000}
+.pass-modal .pass-card{background:#1a1a2e;border-radius:16px;padding:28px;width:90%;max-width:340px;text-align:center;border:1px solid #2a2a3e}
+.pass-modal .pass-card h3{font-size:18px;color:#a78bfa;margin-bottom:6px}
+.pass-modal .pass-card p{font-size:13px;color:#6b7280;margin-bottom:14px}
+.pass-modal .pass-card .pass-err{color:#f87171;font-size:12px;margin-top:6px;min-height:18px}
+@media(max-width:400px){.container{padding:10px}.btn-row{flex-direction:column}.library-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- ===================== DESIGNER VIEW (default) ===================== -->
+<div id="designerScreen" class="screen container">
+  <div style="text-align:center;margin-bottom:18px;padding-top:8px">
+    <h1 class="gradient-text" style="font-size:26px;font-weight:900">&#127912; תרגיל עיצוב פוסט</h1>
+    <p style="color:#6b7280;font-size:13px;margin-top:4px">בחרו קטגוריה ולחצו ליצירת תרגיל</p>
+  </div>
+
+  <!-- Empty: no images at all -->
+  <div id="designerEmpty" class="card empty-state" style="display:none">
+    <div class="empty-icon">&#128683;</div>
+    <h2 style="font-size:20px;font-weight:900;margin-bottom:6px;color:#f3f4f6">אין תרגילים זמינים</h2>
+    <p style="color:#6b7280;font-size:14px">המכשיר טרם העלה תמונות למערכת</p>
+  </div>
+
+  <!-- Controls -->
+  <div id="designerControls" style="display:none">
+    <div class="card">
+      <label for="catSelect">&#128193; קטגוריה:</label>
+      <select id="catSelect">
+        <option value="__all">&#127922; כל הקטגוריות (אקראי)</option>
+      </select>
+      <button id="generateBtn" class="btn btn-primary btn-block" style="font-size:17px;padding:14px;margin-top:12px">
+        &#128640; יצירת תרגיל חדש
+      </button>
+    </div>
+
+    <!-- Result -->
+    <div id="exerciseResult" style="display:none" class="fade-in">
+      <div class="exercise-image"><img id="exerciseImg" src="" alt="תמונת מודעה"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h3 style="font-size:15px;font-weight:700;color:#f3f4f6">&#9997;&#65039; כתבו מלל חדש לפי ההנחיות:</h3>
+        <span id="exerciseCat" style="font-size:12px;color:#a78bfa;font-weight:600;background:rgba(124,58,237,.15);padding:2px 10px;border-radius:20px"></span>
+      </div>
+      <div id="variationsList"></div>
+      <div class="btn-row" style="margin-top:14px">
+        <button id="btnExport" class="btn btn-pink" style="flex:1" disabled>&#128229; ייצוא PNG</button>
+        <button id="btnCopy" class="btn btn-outline" style="flex:1" disabled>&#128203; העתקת מלל</button>
+      </div>
+      <div style="text-align:center;margin-top:10px">
+        <button id="btnNewExercise" class="btn btn-ghost">&#128260; תרגיל נוסף</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin login button -->
+  <div style="text-align:center;margin-top:30px;padding-bottom:20px">
+    <button id="adminLoginBtn" class="btn btn-ghost" style="font-size:12px;color:#4b5563">&#128274; כניסת מנהלים</button>
+  </div>
+
+  <!-- Export card (offscreen for html2canvas) -->
+  <div id="exportPreview" style="position:absolute;left:-9999px;top:0">
+    <div id="exportCard" class="export-card" style="width:480px">
+      <div class="export-header">&#127912; תרגיל עיצוב פוסט</div>
+      <div class="export-image-wrap"><img id="exportImg" src=""></div>
+      <div class="export-fields">
+        <div class="export-field"><span class="export-label">כותרת</span><span id="exportTitle" class="export-value" style="font-size:18px;font-weight:700"></span></div>
+        <div class="export-field"><span class="export-label">תת כותרת</span><span id="exportSubtitle" class="export-value"></span></div>
+        <div class="export-field"><span class="export-label">מלל רץ</span><span id="exportBody" class="export-value export-body"></span></div>
+        <div class="export-field"><span class="export-label">הנעה לפעולה</span><span id="exportCta" class="export-value export-cta"></span></div>
+        <div id="exportFineWrap" class="export-field" style="display:none"><span class="export-label">אותיות קטנות</span><span id="exportFine" class="export-value export-fine"></span></div>
+      </div>
+      <div class="export-footer">הכשרה בעיצוב גרפי</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN VIEW (password-protected) ===================== -->
+<div id="adminScreen" class="screen container">
+  <div style="text-align:center;margin-bottom:4px;padding-top:8px">
+    <h1 class="gradient-text" style="font-size:24px;font-weight:900">&#127912; מחולל תרגילי פוסטים</h1>
+  </div>
+
+  <!-- Top bar with admin badge + exit -->
+  <div class="admin-topbar">
+    <div><span class="admin-badge">ADMIN</span><span style="font-size:13px;color:#9ca3af">ניהול ספריית פוסטים</span></div>
+    <button id="adminExitBtn" class="admin-exit">&#128682; יציאה</button>
+  </div>
+
+  <div class="tab-nav">
+    <button id="tabLibrary" class="active" data-tab="library">&#128218; פוסטים</button>
+    <button id="tabPreview" data-tab="preview">&#128065;&#65039; תצוגה מקדימה</button>
+    <button id="tabSettings" data-tab="settings">&#9881;&#65039;</button>
+  </div>
+
+  <!-- TAB: Library (Posts) -->
+  <div id="panelLibrary" class="tab-panel">
+    <div class="stats-row">
+      <div class="stat-box"><div id="statTotal" class="stat-num">0</div><div class="stat-label">פוסטים</div></div>
+      <div class="stat-box"><div id="statCats" class="stat-num">0</div><div class="stat-label">קטגוריות</div></div>
+    </div>
+    <div id="dropZone" class="drop-zone">
+      <div style="font-size:36px;margin-bottom:8px">&#128228;</div>
+      <div style="font-weight:700;margin-bottom:4px">העלאת פוסטים</div>
+      <div style="font-size:12px;color:#6b7280">גרירה לכאן או לחיצה לבחירת תמונות</div>
+      <input id="fileInput" type="file" accept="image/*" multiple>
+    </div>
+    <div id="libraryGrid" class="library-grid"></div>
+    <div id="libraryEmpty" class="card empty-state" style="display:none">
+      <div class="empty-icon">&#128247;</div>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:6px;color:#f3f4f6">אין פוסטים</h2>
+      <p style="color:#6b7280;font-size:13px">העלו screenshots של פוסטים מספריית המודעות של פייסבוק</p>
+    </div>
+    <!-- Export library to share with designers -->
+    <div style="margin-top:14px;text-align:center">
+      <button id="btnExportLibrary" class="btn btn-ghost" style="font-size:12px">&#128230; ייצוא ספרייה לשיתוף עם מעצבים</button>
+    </div>
+  </div>
+
+  <!-- TAB: Preview (admin sees what designers see) -->
+  <div id="panelPreview" class="tab-panel" style="display:none">
+    <div class="info-box" style="margin-bottom:14px">
+      <strong>&#128065;&#65039; תצוגה מקדימה:</strong> ככה המעצבים רואים את הכלי
+    </div>
+    <div id="previewEmpty" class="card empty-state" style="display:none">
+      <div class="empty-icon">&#128247;</div>
+      <p style="color:#6b7280">אין פוסטים - יש להעלות תחילה בלשונית הפוסטים</p>
+    </div>
+    <div id="previewContent" style="display:none">
+      <div class="card">
+        <label for="previewCatSelect">&#128193; קטגוריה:</label>
+        <select id="previewCatSelect">
+          <option value="__all">&#127922; כל הקטגוריות (אקראי)</option>
+        </select>
+        <button id="previewGenerateBtn" class="btn btn-primary btn-block" style="font-size:16px;padding:12px;margin-top:10px">&#128640; יצירת תרגיל חדש</button>
+      </div>
+      <div id="previewResult" style="display:none" class="fade-in">
+        <div class="exercise-image"><img id="previewImg" src="" alt=""></div>
+        <div style="margin-bottom:10px"><h3 style="font-size:14px;font-weight:700;color:#f3f4f6">&#9997;&#65039; וריאציות מלל:</h3></div>
+        <div id="previewVariations"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Settings -->
+  <div id="panelSettings" class="tab-panel" style="display:none">
+    <div class="card">
+      <h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:#f3f4f6">&#128272; שינוי סיסמת מנהלים</h2>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:10px">הסיסמה הנוכחית משמשת לכניסה לניהול</p>
+      <label for="newPassInput">סיסמה חדשה:</label>
+      <input id="newPassInput" type="text" dir="ltr" style="margin-bottom:8px">
+      <button id="savePassBtn" class="btn btn-primary btn-block" style="font-size:14px;padding:10px">שמירת סיסמה</button>
+      <div id="passMsg" style="font-size:12px;min-height:20px;margin-top:6px"></div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:#f3f4f6">&#128465;&#65039; ניקוי נתונים</h2>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:10px">מחיקת כל הפוסטים מהספרייה המקומית</p>
+      <button id="clearLibraryBtn" class="btn" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)">מחיקת ספרייה</button>
+    </div>
+    <div class="info-box">
+      <strong>&#128161; איך לשתף עם מעצבים:</strong>
+      <br>1. העלו פוסטים בלשונית "פוסטים"
+      <br>2. לחצו "ייצוא ספרייה" → מוריד קובץ
+      <br>3. שלחו את הקובץ למעצבים
+      <br>4. המעצבים פותחים את הקובץ → "ייבוא ספרייה"
+      <br><br>
+      <strong>&#128176; עלות:</strong> אפס! הכל עובד מקומית ללא API.
+    </div>
+  </div>
+</div>
+
+<!-- Password Modal -->
+<div id="passModal" class="pass-modal" style="display:none">
+  <div class="pass-card">
+    <h3>&#128274; כניסת מנהלים</h3>
+    <p>הזינו את הסיסמה (ברירת מחדל: 1234)</p>
+    <input id="passInput" type="password" dir="ltr" placeholder="סיסמה" style="margin-bottom:0">
+    <div class="pass-err" id="passErr"></div>
+    <div class="btn-row" style="margin-top:12px">
+      <button id="passSubmitBtn" class="btn btn-primary" style="flex:1">כניסה</button>
+      <button id="passCancelBtn" class="btn btn-outline" style="flex:1">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category Modal (for admin upload) -->
+<div id="catModal" class="cat-select-modal" style="display:none">
+  <div class="modal-card">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;color:#f3f4f6">בחירת קטגוריה</h3>
+    <p id="catModalCount" style="font-size:12px;color:#6b7280;margin-bottom:14px"></p>
+    <div id="catModalOptions"></div>
+  </div>
+</div>
+
+<!-- Progress Modal -->
+<div id="progressModal" class="cat-select-modal" style="display:none">
+  <div class="modal-card" style="text-align:center">
+    <div style="font-size:36px;margin-bottom:8px">&#9203;</div>
+    <div id="progressText" style="font-weight:600;color:#e5e7eb">מעבד...</div>
+  </div>
+</div>
+
+<script>
+// ===========================================================
+// MODE: admin vs designer (password-based)
+// ===========================================================
+let IS_ADMIN = false;
+const DEFAULT_ADMIN_PASS = '1234';
+function getAdminPass(){return localStorage.getItem('adminPass') || DEFAULT_ADMIN_PASS}
+function setAdminPass(p){localStorage.setItem('adminPass',p)}
+
+// ===========================================================
+// CATEGORIES
+// ===========================================================
+const CATEGORIES = [
+  "ריהוט","נדלן","אירועים","מסעדה","פיצריה","קפה",
+  "תכשיטים","בגדים","קוסמטיקה","בושם","סופרמרקט",
+  "ילדים","ספורט","יוגה","רפואה","משפטים","חשבונאות",
+  "דרושים","טיולים","מלון","קורסים","שיפוצים","מספרה","רכב","אחר"
+];
+
+// ===========================================================
+// RANDOMIZATION DATA
+// ===========================================================
+const R = {
+  city:["תל אביב","ירושלים","חיפה","באר שבע","ראשון לציון","פתח תקווה","נתניה","אשדוד","הרצליה","רעננה","כפר סבא","רמת גן","גבעתיים","חולון","בת ים","מודיעין","רחובות","נס ציונה","הוד השרון","רמת השרון"],
+  neighborhood:["נווה שאנן","פלורנטין","הצפון הישן","נווה צדק","רמת אביב","עיר ימים","גני תקווה","נאות אפקה","כפר גנים","רמות","בית הכרם","עין כרם","נווה זאב","רמת אשכול","נחלת יצחק"],
+  firstName:["דניאל","נועם","איתי","עומר","יובל","אורי","רועי","שחר","עדי","ליאור","תמר","מאיה","נועה","שירה","יעל","אלון","גיל","רון","עמית","טל"],
+  bizName:["אלון","שקד","ברוש","גפן","דקל","אורן","צבר","הדר","ענבר","אופק","רימון","מעיין","ליבנה","אילת","אלמוג","כרמל","סהר","נוגה","ארז","אביב"],
+  bizSuffix:["סטודיו","קליניקה","בוטיק","אקספרס","פלוס","הום","פרו","VIP","גרופ","דיזיין"],
+  percent:["10%","15%","20%","25%","30%","35%","40%","50%"],
+  price:["49","69","79","89","99","119","129","149","169","199","249","299","349","399","449","499","599","699","799","899","999","1,199","1,499","1,799","1,999","2,499"],
+  priceHigh:["299,000","349,000","399,000","449,000","499,000","599,000","699,000","799,000","899,000","999,000","1,200,000","1,500,000","1,800,000","2,100,000","2,500,000"],
+  rooms:["2","2.5","3","3.5","4","4.5","5","5.5","6"],
+  floor:["2","3","4","5","6","7","8","9","10","12","14","16"],
+  area:["55","65","75","80","85","90","100","110","120","130","140","150","160"],
+  phone:["050","052","053","054","055","058"].map(p=>p+"-"+Math.floor(1000000+Math.random()*9000000)),
+  date:["15.4","20.4","30.4","1.5","15.5","31.5","1.6","15.6","30.6","1.7","31.7","1.8","15.8","31.8"],
+  hours:["8:00-16:00","9:00-17:00","10:00-18:00","10:00-20:00","10:00-22:00","8:00-20:00","7:00-15:00","11:00-23:00"],
+  year:["2025","2026"],
+  count:["3","5","7","10","12","15","20","25","30","50","100"],
+  days:["3","5","7","10","14","21","30"],
+  adjFood:["טרי","ביתי","אותנטי","מיוחד","מפנק","עשיר","מושלם"],
+  adjLux:["יוקרתי","מפנק","אקסקלוסיבי","פרימיום","מהודר","מרשים"],
+  adjNew:["חדש","ייחודי","מהפכני","חדשני","בלעדי","מיוחד"],
+  color:["זהב","כסף","רוז גולד","שחור","לבן","ורוד","תכלת","אדום"],
+  material:["זהב 14K","כסף 925","זהב ציפוי","פלדת אל-חלד","טיטניום"],
+  skinType:["עור יבש","עור שמן","עור מעורב","כל סוגי העור","עור רגיש"],
+  treatment:["לייזר","בוטוקס","חומצה היאלורונית","פילינג","מיצוק","מזותרפיה","RF"],
+  sport:["כושר","קרוספיט","פילאטיס","איגרוף","TRX","ריצה","שחייה","אימון פונקציונלי"],
+  legal:["דיני עבודה","דיני משפחה","נדל\"ן","נזיקין","פלילי","מסחרי","ירושות וצוואות"],
+  destination:["יוון","קפריסין","ברצלונה","רומא","פריז","תאילנד","דובאי","ברלין","אמסטרדם","פראג","בודפשט","טוסקנה","סנטוריני","קרואטיה","פורטוגל"],
+  carBrand:["טויוטה","יונדאי","קיה","מאזדה","סקודה","שברולט","ניסן","הונדה","סוזוקי","פולקסווגן"],
+  hairStyle:["תספורת","צבע","החלקה","פן","תוספות","גוונים","בלונד","אומברה","בלאייז"],
+  renovationType:["שיפוץ מטבח","שיפוץ חדר אמבטיה","שיפוץ כללי","עיצוב דירה","עיצוב סלון","תכנון פנים","ריצוף"],
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function pickN(a,n){const s=[...a].sort(()=>Math.random()-.5);return s.slice(0,n)}
+function fill(s){return s.replace(/\{(\w+)\}/g,(_,k)=>R[k]?pick(R[k]):_)}
+
+// ===========================================================
+// TEMPLATE DATABASE
+// ===========================================================
+const TEMPLATES={
+"ריהוט":[
+{title:"סלון חדש? הגיע הזמן",subtitle:"מבצע סוף עונה - עד {percent} הנחה על כל הסלונים",body:"קולקציית {year} כאן! ספות, כורסאות ומערכות ישיבה במחירים שלא יחזרו. מעל 200 דגמים בתצוגה. משלוח חינם עד הבית.",cta:"לצפייה בקולקציה",fine_print:"* ההנחה על פריטים נבחרים. עד {date} או עד גמר המלאי. ט.ל.ח."},
+{title:"הבית שלכם, הסגנון שלכם",subtitle:"רהיטים בעיצוב מודרני במחירי יבואן",body:"עיצבו את הבית בדיוק כמו שתמיד חלמתם. פינות אוכל, מזנונים, שידות וארונות - הכל במקום אחד. ייעוץ עיצובי חינם.",cta:"לקטלוג המלא ←",fine_print:""},
+{title:"מתחילים מ-₪{price} בלבד",subtitle:"חיסול מלאי רהיטים - פעם בשנה",body:"כורסאות מ-₪{price}, שולחנות סלון מ-₪{price}, מיטות זוגיות מ-₪{price}. הכמות מוגבלת!",cta:"למבצעים ←",fine_print:"* המחירים לפריטי תצוגה בלבד. ט.ל.ח."},
+{title:"שדרוג לחדר השינה",subtitle:"מיטות ומזרנים אורתופדיים ב-{percent} הנחה",body:"שינה טובה מתחילה ממזרן טוב. מגוון מזרנים אורתופדיים, מיטות מרופדות ומסגרות עץ מלא. אחריות עד 10 שנים.",cta:"להזמנה עכשיו",fine_print:"* ההנחה בתוקף עד {date}. אחריות בהתאם ליצרן."},
+{title:"רהיטי גן ומרפסת",subtitle:"קולקציית קיץ {year} - עיצוב חוץ ברמה אחרת",body:"סטים לגינה, שמשיות, ערסלים וריהוט אלומיניום פרימיום. עמידים בתנאי מזג אוויר.",cta:"לצפייה בקולקציה",fine_print:""},
+{title:"עיצוב הבית מתחיל כאן",subtitle:"{bizName} רהיטים - סניף חדש ב{city}",body:"סניף חדש נפתח ב{city}! {percent} הנחה על כל החנות לרגל הפתיחה.",cta:"לפרטים והגעה",fine_print:"* מבצע פתיחה בתוקף עד {date}. ט.ל.ח."},
+{title:"פינת אוכל מושלמת",subtitle:"שולחן + {count} כיסאות - החל מ-₪{price}",body:"אירוח ברמה אחרת מתחיל מפינת אוכל מרשימה. שולחנות עץ מלא, אלון או אגוז.",cta:"להזמנה",fine_print:""},
+{title:"חיסול: עד {percent} הנחה",subtitle:"ימי מכירה מיוחדים - {days} ימים בלבד",body:"רק {days} ימים! מערכות ישיבה, ארונות, מיטות וכל מה שביניהם במחירים הכי נמוכים השנה.",cta:"לחנות ←",fine_print:"* עד גמר המלאי. ט.ל.ח."},
+],
+"נדלן":[
+{title:"הדירה שחיכיתם לה",subtitle:"{rooms} חדרים ב{city} - החל מ-₪{priceHigh}",body:"פרויקט חדש ב{neighborhood}! דירות {rooms} חדרים, מרפסת שמש, חניה ומחסן. קומות גבוהות עם נוף פתוח.",cta:"להשארת פרטים ←",fine_print:"* הדמיה להמחשה בלבד. המחירים לפני מע\"מ. ט.ל.ח."},
+{title:"דירת {rooms} חדרים ב{city}",subtitle:"קומה {floor}, {area} מ\"ר, מיקום מרכזי",body:"דירה מרווחת ומוארת ב{neighborhood}. {rooms} חדרים, מטבח מעוצב, {area} מ\"ר בנוי. חניה + מחסן.",cta:"לתיאום סיור ←",fine_print:"* דמי תיווך 2% + מע\"מ"},
+{title:"השקעה חכמה ב{city}",subtitle:"תשואה של {percent} - דירות להשקעה",body:"דירות {rooms} חדרים באזור ביקוש גבוה. תפוסה מלאה, שוכרים קבועים. הזדמנות השקעה שלא תחזור.",cta:"פרטים נוספים",fine_print:"* התשואה מבוססת על נתוני שוק. אינה מהווה הבטחת תשואה."},
+{title:"הפרויקט שמשנה את {city}",subtitle:"מגורי {adjLux} בלב {neighborhood}",body:"פרויקט דגל עם {rooms} חדרים, לובי מפואר, חדר כושר וגג משותף. סטנדרט בנייה גבוה.",cta:"הצטרפו עכשיו",fine_print:"* הדמיות להמחשה. ט.ל.ח."},
+{title:"מחיר למשתכן ב{city}",subtitle:"דירות {rooms} חדרים במחירים מפוקחים",body:"נרשמו להגרלה! דירות חדשות ב{neighborhood}, {area} מ\"ר, מפרט עשיר.",cta:"לבדיקת זכאות",fine_print:"* בכפוף לתנאי מחיר למשתכן. ט.ל.ח."},
+{title:"פנטהאוז ב{city}",subtitle:"קומה {floor}, {area} מ\"ר + מרפסת ענקית",body:"פנטהאוז מרהיב ב{neighborhood} עם נוף פנורמי. {rooms} חדרים, עיצוב אדריכלי, חניה כפולה.",cta:"לתיאום ביקור",fine_print:""},
+{title:"קוטג' חדש ב{city}",subtitle:"{area} מ\"ר על מגרש, {rooms} חדרים + גינה",body:"בית פרטי חדש ב{neighborhood}. {rooms} חדרים, סלון כפול, מטבח גדול, גינה מטופחת.",cta:"לפרטים ←",fine_print:"* דמי תיווך 2% + מע\"מ"},
+{title:"דירה ב{city} - מחיר שובר שוק",subtitle:"{rooms} חדרים, {area} מ\"ר - ₪{priceHigh}",body:"הזדמנות שלא חוזרת! דירת {rooms} חדרים ב{neighborhood}, משופצת, מוכנה לכניסה.",cta:"להתקשר עכשיו",fine_print:""},
+{title:"קרקע להשקעה ב{city}",subtitle:"הון עצמי החל מ-₪{priceHigh}",body:"קרקע פרטית בטאבו, מיועדת למגורים. עד {count} תשלומים. הזדמנות להשקעה חכמה ב{city}.",cta:"לפרטים נוספים ←",fine_print:"* הקרקע אינה זמינה לבנייה. ט.ל.ח."},
+{title:"דירות {rooms} ו-{rooms} חדרים",subtitle:"בהטבה ייחודית - נמכרו מעל {count} דירות!",body:"פרויקט מגורי {adjLux} ב{city}. מפרט עשיר, מרפסות סוכה גדולות, ליווי בנקאי. נשארו דירות אחרונות!",cta:"אז יאללה בלאגן ←",fine_print:"* ההדמיות להמחשה בלבד. ט.ל.ח."},
+],
+"אירועים":[
+{title:"האירוע המושלם מתחיל כאן",subtitle:"אולם אירועים {adjLux} ב{city} - עד {count} מוזמנים",body:"חתונה, בר מצווה או אירוע עסקי? חבילות הכל כלול: קייטרינג, DJ, עיצוב ותאורה.",cta:"לתיאום סיור",fine_print:"* המחירים בהתאם לגודל האירוע ולתאריך"},
+{title:"חתונה שלא תשכחו",subtitle:"גן אירועים ב{city} - חבילות החל מ-₪{price} למנה",body:"מקום קסום עם גינה ירוקה, חופה מעוצבת ואוכל שמדברים עליו. עד {count} מוזמנים.",cta:"לשריין תאריך",fine_print:"* מינימום 150 מנות. ט.ל.ח."},
+{title:"מבצע מוקדמים {year}",subtitle:"{percent} הנחה על הזמנות עד {date}",body:"מי שסוגר עכשיו - מרוויח! {percent} הנחה על כל חבילות האירועים.",cta:"לפרטים והזמנה",fine_print:"* ההנחה לאירועים בימי א-ה בלבד. ט.ל.ח."},
+{title:"בר מצווה ברמה אחרת",subtitle:"חבילה מושלמת כולל DJ + צלם + עיצוב",body:"חבילת בר/בת מצווה הכל כלול: DJ מקצועי, צלם, מגנטים, עיצוב שולחנות ותפריט מיוחד.",cta:"לבניית חבילה",fine_print:""},
+{title:"אירוע עסקי ב{city}",subtitle:"אולם כנסים עד {count} משתתפים",body:"כנסים, ימי עיון ואירועי חברה. מערכת הגברה, מקרנים, WiFi מהיר, קייטרינג מגוון.",cta:"לקבלת הצעת מחיר",fine_print:""},
+{title:"הפקת אירועים מא' עד ת'",subtitle:"{bizName} הפקות - {count} שנות ניסיון",body:"מחתונות אינטימיות ועד כנסים של אלפים. צוות מנוסה שידאג לכל פרט.",cta:"שיחת ייעוץ חינם",fine_print:""},
+],
+"מסעדה":[
+{title:"טעמים שמספרים סיפור",subtitle:"מסעדת {bizName} - חוויה קולינרית ב{city}",body:"תפריט עונתי עם חומרי גלם {adjFood}ים. סטייקים, דגים ומנות שף מיוחדות.",cta:"להזמנת מקום",fine_print:""},
+{title:"ארוחה עסקית ב-₪{price}",subtitle:"ראשונה + עיקרית + שתייה - כל יום בין {hours}",body:"ההפסקה הכי טעימה ביום! תפריט עסקי מתחלף עם מנות {adjFood}יות.",cta:"לתפריט המלא",fine_print:"* בימי א-ה בלבד"},
+{title:"דיל זוגי ב-₪{price}",subtitle:"2 מנות עיקריות + קינוח לשתף",body:"ערב רומנטי ב{bizName} ב{city}. בחרו 2 מנות, קבלו קינוח שף במתנה. בתוקף עד {date}.",cta:"להזמנת שולחן",fine_print:"* לא כולל משקאות."},
+{title:"נפתח סניף חדש ב{city}!",subtitle:"מסעדת {bizName} - מבצעי פתיחה",body:"{percent} הנחה על כל התפריט לרגל הפתיחה. בואו לטעום.",cta:"לניווט ←",fine_print:"* מבצע פתיחה עד {date}"},
+{title:"אוכל ביתי של פעם",subtitle:"{bizName} - מטבח {adjFood} ב{city}",body:"מרקים, תבשילים ומנות {adjFood}יות כמו פעם. אוכל אמיתי, ללא חומרים משמרים.",cta:"להזמנה ←",fine_print:"* משלוח חינם מעל ₪{price}"},
+],
+"פיצריה":[
+{title:"הפיצה הכי טובה ב{city}",subtitle:"{bizName} פיצה - בצק איטלקי אותנטי",body:"בצק שמתפחח 72 שעות, רוטב עגבניות סן מרזנו, מוצרלה איטלקית.",cta:"להזמנה ←",fine_print:""},
+{title:"מבצע משפחתי!",subtitle:"2 פיצות XL + תוספת + שתייה ב-₪{price}",body:"ארוחה לכל המשפחה! 2 פיצות גדולות, תוספת לבחירה ו-1.5 ליטר שתייה.",cta:"להזמנה עכשיו",fine_print:"* ט.ל.ח."},
+{title:"פיצה + שתייה ב-₪{price}",subtitle:"מבצע צהריים בין {hours}",body:"פיצה אישית + שתייה קרה ב-₪{price} בלבד. כל יום.",cta:"הזמינו עכשיו",fine_print:"* בסניפים המשתתפים"},
+{title:"סניף חדש ב{city}!",subtitle:"{bizName} פיצה - {percent} הנחה",body:"{percent} הנחה על כל התפריט. פיצות, פסטות, פוקצ'ות ועוד.",cta:"לניווט ←",fine_print:"* עד {date}"},
+],
+"קפה":[
+{title:"הקפה של הבוקר",subtitle:"{bizName} קפה - סניף חדש ב{city}",body:"אספרסו, קפוצ'ינו, לאטה ועוד - מפולי קפה טריים שנקלים כל שבוע.",cta:"לבקר אותנו",fine_print:""},
+{title:"ארוחת בוקר ב-₪{price}",subtitle:"כל בוקר עד 12:00 - ב{bizName}",body:"ארוחת בוקר ישראלית עשירה: ביצים, סלטים, לחמים, ממרחים + קפה חם.",cta:"בואו לטעום",fine_print:""},
+{title:"קפה + מאפה ב-₪{price}",subtitle:"מבצע בוקר ב{bizName} {city}",body:"קפה לבחירה + מאפה חמאה טרי מהתנור. כל בוקר עד 11:00.",cta:"לסניף הקרוב",fine_print:"* בסניפים המשתתפים"},
+],
+"תכשיטים":[
+{title:"תכשיט שמספר סיפור",subtitle:"{bizName} תכשיטים - קולקציית {year}",body:"תכשיטי {material} בעיצוב ייחודי. טבעות, שרשראות, עגילים וצמידים.",cta:"לקולקציה ←",fine_print:""},
+{title:"מבצע {percent} הנחה",subtitle:"על כל הקולקציה - {days} ימים בלבד",body:"{percent} הנחה על כל תכשיטי {material}. טבעות אירוסין, מתנות ופריטי יום יום.",cta:"קנו עכשיו",fine_print:"* עד {date} או עד גמר המלאי"},
+{title:"מתנה מושלמת",subtitle:"תכשיטי {material} מ-₪{price}",body:"שרשרת {color} עדינה, עגילי {material}, או צמיד חריטה אישי. אריזת מתנה חינם.",cta:"לבחירת מתנה",fine_print:"* משלוח חינם מעל ₪{price}"},
+{title:"צמידי חריטה אישיים",subtitle:"הטביעו את השם שלכם - ₪{price}",body:"צמיד {material} עם חריטה אישית. מתנה מושלמת ליום הולדת, יום נישואין או סתם.",cta:"עצבו עכשיו",fine_print:""},
+],
+"בגדים":[
+{title:"קולקציית קיץ {year}",subtitle:"{bizName} - סגנון שמדבר",body:"שמלות, חולצות, מכנסיים ואקססוריז. בדים קלים ונושמים בצבעים של השעה.",cta:"לקולקציה ←",fine_print:""},
+{title:"סייל {percent} הנחה!",subtitle:"על כל הקולקציה - ב{bizName} {city}",body:"חיסול עונה! {percent} הנחה על כל הפריטים. הסייל נגמר ב-{date}.",cta:"לקנייה עכשיו",fine_print:"* לא כולל קולקציה חדשה"},
+{title:"קנו 2, השלישי חינם!",subtitle:"מבצע מיוחד ב{bizName} - כל הפריטים",body:"קנו 2 פריטים, קבלו את הזול מביניהם חינם. גם באתר!",cta:"לקנייה ←",fine_print:"* עד {date}."},
+],
+"קוסמטיקה":[
+{title:"עור חלק ב-{days} ימים",subtitle:"{bizName} - סדרת טיפוח מתקדמת",body:"סדרת טיפוח ל{skinType}. סרום, קרם לחות, מסכה וטונר. תוצאות אחרי שבוע.",cta:"להזמנה ←",fine_print:""},
+{title:"מבצע 1+1 חינם",subtitle:"על כל מוצרי הטיפוח - {days} ימים בלבד",body:"קנו מוצר אחד, קבלו שני חינם. פנים, גוף, שיער ומייקאפ.",cta:"לחנות ←",fine_print:"* הזול מבין השניים. עד {date}."},
+{title:"ערכת מייקאפ מושלמת",subtitle:"כל מה שצריך ב-₪{price} - מהדורה מוגבלת",body:"שפתון, מסקרה, בסיס, סמק ו-{count} גווני צלליות. באריזת מתנה.",cta:"להזמנה ←",fine_print:"* עד גמר המלאי"},
+],
+"בושם":[
+{title:"הניחוח שלכם מחכה",subtitle:"{bizName} בשמים - מותגים בינלאומיים",body:"מגוון בשמים מהמותגים המובילים. בדיקת ניחוח חינם בסניף ב{city}.",cta:"לקטלוג ←",fine_print:""},
+{title:"מארז מתנה {adjLux}",subtitle:"בושם + קרם גוף + ג'ל רחצה ב-₪{price}",body:"המארז המושלם למתנה: שלישיית מוצרים באותו ניחוח. באריזה {adjLux}ית.",cta:"להזמנה",fine_print:""},
+],
+"סופרמרקט":[
+{title:"מבצעי השבוע",subtitle:"{bizName} סופר - חוסכים עד {percent}",body:"מבצעים על מוצרי בסיס: חלב, לחם, פירות וירקות טריים.",cta:"לדף המבצעים",fine_print:"* בתוקף עד {date}. ט.ל.ח."},
+{title:"טרי מהבוקר!",subtitle:"פירות וירקות {adjFood}ים ב{bizName}",body:"כל בוקר מגיעים פירות וירקות {adjFood}ים מחקלאים מקומיים.",cta:"לסניף הקרוב",fine_print:""},
+{title:"משלוח חינם!",subtitle:"על כל הזמנה מעל ₪{price} ב{bizName} אונליין",body:"קונים מהבית, מקבלים עד הדלת. אותם מוצרים, אותם מחירים.",cta:"להזמנה אונליין",fine_print:"* באזורי החלוקה המוגדרים"},
+],
+"ילדים":[
+{title:"קיץ שמח לילדים!",subtitle:"קייטנת {bizName} - הרשמה מוקדמת ב-{percent} הנחה",body:"קייטנות קיץ {year} לגילאי 4-12. פעילויות יצירה, ספורט, בריכה ועוד.",cta:"להרשמה ←",fine_print:"* ההנחה להרשמות עד {date}"},
+{title:"צעצועים ומשחקים",subtitle:"{bizName} - עד {percent} הנחה על כל החנות",body:"משחקי קופסה, לגו, בובות, כלי רכב. גילאי 0-14. משלוח חינם מעל ₪{price}.",cta:"לחנות ←",fine_print:"* עד {date}. ט.ל.ח."},
+{title:"חוגים לילדים ב{city}",subtitle:"{bizName} - {count}+ חוגים לכל גיל",body:"ריקוד, ציור, קרטה, מוזיקה, רובוטיקה. גילאי 3-16. שיעור ניסיון חינם!",cta:"להרשמה לניסיון",fine_print:""},
+],
+"ספורט":[
+{title:"אימון חינם!",subtitle:"שיעור ניסיון ב{bizName} {city}",body:"שיעור {sport} ראשון חינם! מאמנים מוסמכים, ציוד חדיש.",cta:"להרשמה לניסיון",fine_print:"* שיעור ניסיון אחד לאדם"},
+{title:"מנוי חודשי ב-₪{price}",subtitle:"{bizName} {sport} - אין התחייבות",body:"אימון {sport} {count} פעמים בשבוע. מנוי גמיש, ביטול בכל עת.",cta:"להצטרפות ←",fine_print:""},
+{title:"חבילת כושר {year}",subtitle:"{percent} הנחה על מנוי שנתי",body:"מנוי שנתי עם גישה לכל השיעורים + חדר כושר + סאונה.",cta:"מידע נוסף ←",fine_print:"* בתוקף עד {date}."},
+],
+"יוגה":[
+{title:"נשמו עמוק",subtitle:"{bizName} יוגה - סטודיו חדש ב{city}",body:"שיעורי יוגה, פילאטיס ומדיטציה. מורים מוסמכים, קבוצות קטנות. שיעור ניסיון חינם.",cta:"להרשמה ←",fine_print:""},
+{title:"מנוי חודשי ב-₪{price}",subtitle:"שיעורים ללא הגבלה ב{bizName}",body:"יוגה, פילאטיס, אשטנגה ווין-יאסה. {count}+ שיעורים בשבוע.",cta:"הצטרפו עכשיו",fine_print:""},
+{title:"פילאטיס מכשירים",subtitle:"{bizName} - ריפורמר ב{city}",body:"פילאטיס ריפורמר בקבוצות קטנות (עד {count}). חיזוק, גמישות ויציבה.",cta:"שיעור ניסיון ←",fine_print:""},
+],
+"רפואה":[
+{title:"חיוך חדש ב-₪{price}",subtitle:"קליניקת {bizName} - טיפולי שיניים ב{city}",body:"ישור שיניים, הלבנה, כתרים ושתלים. צוות מומחים. ייעוץ ראשוני חינם.",cta:"לתיאום תור",fine_print:"* בכפוף לאבחנה."},
+{title:"טיפולי {treatment}",subtitle:"קליניקת {bizName} - תוצאות מוכחות",body:"טיפולי {treatment} מתקדמים ב{city}. טכנולוגיה חדישה, תוצאות מהטיפול הראשון.",cta:"לייעוץ חינם ←",fine_print:"* בכפוף לאבחנה רפואית"},
+{title:"פיזיותרפיה ב{city}",subtitle:"{bizName} - טיפול בכאב ושיקום",body:"כאבי גב? ברכיים? צוואר? צוות פיזיותרפיסטים ב{city} יחזיר אתכם לתפקוד.",cta:"לתיאום טיפול",fine_print:""},
+],
+"משפטים":[
+{title:"עורך דין {legal}",subtitle:"משרד {bizName} - ייעוץ ראשוני חינם",body:"מומחים ב{legal} עם {count}+ שנות ניסיון. ליווי אישי ומקצועיות.",cta:"ליצירת קשר ←",fine_print:""},
+{title:"פיצויים? מגיע לכם!",subtitle:"משרד {bizName} - תביעות נזיקין",body:"נפגעתם בתאונה? עבודה? רשלנות? שכר טרחה רק בהצלחה.",cta:"ייעוץ חינם ←",fine_print:"* שכר טרחה מותנה בהצלחת התביעה"},
+],
+"חשבונאות":[
+{title:"רואה חשבון ב{city}",subtitle:"משרד {bizName} - ליווי עסקי מקצועי",body:"הנהלת חשבונות, דוחות שנתיים, מיסוי ותכנון פיננסי. פגישת ייעוץ חינם.",cta:"לתיאום פגישה",fine_print:""},
+{title:"החזרי מס? מגיע לכם!",subtitle:"{bizName} - בדיקת זכאות חינם",body:"שכירים ועצמאיים - ייתכן שמגיע לכם החזר של אלפי שקלים. בדיקה חינם.",cta:"לבדיקת זכאות ←",fine_print:"* שכר טרחה רק ממה שיוחזר"},
+],
+"דרושים":[
+{title:"דרושים עובדים ב{city}!",subtitle:"{bizName} - שכר מעולה, תנאים מצוינים",body:"משרות פנויות ב{city} ובסביבה. שכר גבוה, קידום מהיר.",cta:"שלחו קורות חיים",fine_print:""},
+{title:"מלצרים/ות דרושים!",subtitle:"{bizName} ב{city} - שכר {price} ₪/שעה + טיפים",body:"משמרות גמישות, ארוחות צוות, אווירה מעולה. ניסיון - יתרון.",cta:"להגשת מועמדות ←",fine_print:""},
+{title:"עבודה מהבית!",subtitle:"{bizName} - נציגי שירות / מכירות",body:"שכר בסיס + עמלות. הכשרה מלאה. עובדים מהבית, מרוויחים יפה!",cta:"הגישו מועמדות",fine_print:""},
+],
+"טיולים":[
+{title:"חופשה ב{destination}!",subtitle:"{days} ימים כולל טיסות + מלון מ-₪{price}",body:"טיסות ישירות, מלון {adjLux}, ארוחת בוקר. מחיר מיוחד עד {date}.",cta:"להזמנה ←",fine_print:"* מחיר לאדם בחדר זוגי. בכפוף לזמינות."},
+{title:"טיול מאורגן ל{destination}",subtitle:"{days} ימים, מדריך בעברית, הכל כלול",body:"סיורים, ארוחות, כניסות לאתרים. קבוצה קטנה עד {count} משתתפים.",cta:"פרטים ומחירים",fine_print:""},
+{title:"דיל חם ל{destination}",subtitle:"טיסה הלוך-חזור מ-₪{price}!",body:"טסים ל{destination} במחיר שלא יחזור! תאריכים גמישים, כבודה כלולה.",cta:"להזמנת כרטיסים",fine_print:"* במועדים נבחרים."},
+],
+"מלון":[
+{title:"לילה {adjLux} ב{city}",subtitle:"מלון {bizName} - החל מ-₪{price} ללילה",body:"חדרים מרווחים, ארוחת בוקר עשירה, בריכה, ספא.",cta:"להזמנה ←",fine_print:"* מחיר לחדר זוגי. בלילות נבחרים."},
+{title:"סופ\"ש זוגי",subtitle:"{bizName} - חבילת {days} לילות מ-₪{price}",body:"בריחה זוגית: {days} לילות, ארוחות בוקר, טיפול ספא לזוג.",cta:"הזמינו עכשיו",fine_print:""},
+{title:"צימר ב{city}",subtitle:"{bizName} - רומנטיקה בטבע",body:"יחידה פרטית עם ג'קוזי, מרפסת עם נוף, ארוחת בוקר גלילית.",cta:"לפרטים וזמינות",fine_print:""},
+],
+"קורסים":[
+{title:"למדו {adjNew} ב-{days} ימים",subtitle:"קורס אונליין ב{bizName} - הרשמה פתוחה",body:"קורס מקצועי עם תעודה. {count}+ שעות תוכן, תרגולים מעשיים.",cta:"להרשמה ←",fine_print:"* תשלום בפריסה נוחה"},
+{title:"קורס אונליין ב-₪{price}",subtitle:"{bizName} - למדו בקצב שלכם",body:"גישה לכל החיים! {count} שיעורים + חומרי עזר + קבוצת תמיכה.",cta:"התחילו היום",fine_print:""},
+{title:"הטבה מיוחדת!",subtitle:"{percent} הנחה על כל הקורסים ב{bizName}",body:"עיצוב, שיווק, תכנות, צילום ועוד. הצטרפו ל-{count}+ בוגרים מרוצים.",cta:"בחרו קורס ←",fine_print:"* בתוקף עד {date}. ט.ל.ח."},
+],
+"שיפוצים":[
+{title:"{renovationType} ב{city}",subtitle:"{bizName} - מקצועיות ואמינות",body:"{renovationType} ברמה גבוהה. חומרים איכותיים, עבודה נקייה, עמידה בזמנים.",cta:"להצעת מחיר ←",fine_print:"* אחריות שנה על העבודה"},
+{title:"שיפוץ? רק עם {bizName}",subtitle:"שיפוצים ועיצוב פנים ב{city}",body:"שיפוצים מהיסוד: מטבח, אמבטיה, סלון. אדריכל פנים + צוות מקצועי. {count}+ פרויקטים.",cta:"לתיאום פגישה",fine_print:""},
+{title:"מבצע מטבחים!",subtitle:"מטבח חדש מ-₪{price} - כולל התקנה",body:"מטבחים בהתאמה אישית. מדידה, עיצוב והתקנה - הכל כלול.",cta:"לתיאום מדידה חינם",fine_print:"* ט.ל.ח."},
+],
+"מספרה":[
+{title:"לוק חדש ב{bizName}",subtitle:"מספרת {adjLux} ב{city}",body:"{hairStyle}, {hairStyle} ועוד - צוות מעצבי שיער מנוסים. ייעוץ חינם.",cta:"לקביעת תור ←",fine_print:""},
+{title:"{hairStyle} ב-₪{price}",subtitle:"מבצע חודשי ב{bizName} {city}",body:"{hairStyle} מקצועי ב-₪{price}. מוצרים מקצועיים, תוצאה מדהימה.",cta:"לקביעת תור",fine_print:"* עד {date}."},
+{title:"סלון ציפורניים {adjLux}",subtitle:"{bizName} ב{city} - מניקור ופדיקור",body:"מניקור ג'ל, פדיקור רפואי, לק ג'ל בכל הצבעים. ב-₪{price}.",cta:"לקביעת תור ←",fine_print:""},
+],
+"רכב":[
+{title:"שירות לרכב ב{city}",subtitle:"מוסך {bizName} - מקצועי ואמין",body:"טיפולים שוטפים, תיקונים, פחחות וצבע. מוסך מורשה ל{carBrand}.",cta:"לתיאום תור",fine_print:""},
+{title:"טסט + טיפול ב-₪{price}",subtitle:"{bizName} - מבצע לפני הטסט",body:"חבילת טיפול שנתי + הכנה לטסט. שמן, מסנן, בלמים, צמיגים.",cta:"לקביעת תור ←",fine_print:"* לרכבים עד 1,800 סמ\"ק"},
+{title:"צמיגים במבצע!",subtitle:"{bizName} - 1+1 חינם על צמיגים נבחרים",body:"קנו צמיג, קבלו את השני חינם! מותגים מובילים, התקנה כלולה.",cta:"לבדיקת מחיר",fine_print:"* עד {date}."},
+],
+"אחר":[
+{title:"הנחה {adjNew}ית!",subtitle:"{bizName} ב{city} - {percent} הנחה על הכל",body:"מבצע מיוחד לתקופה מוגבלת. הזדמנות שלא תחזור!",cta:"לפרטים ←",fine_print:"* בתוקף עד {date}. ט.ל.ח."},
+{title:"שירות מספר 1 ב{city}",subtitle:"{bizName} - {count}+ לקוחות מרוצים",body:"מקצועיות, אמינות, ומחירים הוגנים. הצטרפו ל{count}+ לקוחות מרוצים.",cta:"צרו קשר",fine_print:""},
+{title:"פתיחה חגיגית!",subtitle:"{bizName} ב{neighborhood} - מבצעי פתיחה",body:"סניף חדש! {percent} הנחה לרגל הפתיחה.",cta:"כתובת ופרטים",fine_print:"* עד {date}"},
+{title:"הצעה מוגבלת!",subtitle:"{bizName} - עד {percent} הנחה, {days} ימים אחרונים",body:"המבצע נגמר בקרוב! מי שמחליט עכשיו, חוסך בגדול.",cta:"לפרטים ←",fine_print:"* ט.ל.ח."},
+]
+};
+
+// ===========================================================
+// GENERATE
+// ===========================================================
+function generateVariations(category){
+  let t=TEMPLATES[category];
+  if(!t||!t.length)t=TEMPLATES["אחר"];
+  return pickN(t,Math.min(3,t.length)).map(x=>({
+    title:fill(x.title),subtitle:fill(x.subtitle),body:fill(x.body),cta:fill(x.cta),fine_print:fill(x.fine_print)
+  }));
+}
+
+// ===========================================================
+// INDEXED DB
+// ===========================================================
+let db=null;const DB_NAME='PostExercisesDB',DB_VERSION=1,STORE_NAME='images';
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VERSION);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE_NAME)){d.createObjectStore(STORE_NAME,{keyPath:'id',autoIncrement:true}).createIndex('category','category',{unique:false})}};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=e=>rej(e.target.error)})}
+function dbAdd(item){return new Promise((r,j)=>{const tx=db.transaction(STORE_NAME,'readwrite');const q=tx.objectStore(STORE_NAME).add(item);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}
+function dbGetAll(){return new Promise((r,j)=>{const tx=db.transaction(STORE_NAME,'readonly');const q=tx.objectStore(STORE_NAME).getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}
+function dbDelete(id){return new Promise((r,j)=>{const tx=db.transaction(STORE_NAME,'readwrite');const q=tx.objectStore(STORE_NAME).delete(id);q.onsuccess=()=>r();q.onerror=()=>j(q.error)})}
+function dbClear(){return new Promise((r,j)=>{const tx=db.transaction(STORE_NAME,'readwrite');const q=tx.objectStore(STORE_NAME).clear();q.onsuccess=()=>r();q.onerror=()=>j(q.error)})}
+
+// ===========================================================
+// STATE
+// ===========================================================
+let allImages=[],currentImage=null,currentVariations=[],selectedVariation=null,pendingFiles=[];
+
+// ===========================================================
+// SWITCH MODE
+// ===========================================================
+function switchToAdmin(){
+  IS_ADMIN=true;
+  document.getElementById('designerScreen').classList.remove('active');
+  document.getElementById('adminScreen').classList.add('active');
+  setupAdmin();
+}
+function switchToDesigner(){
+  IS_ADMIN=false;
+  document.getElementById('adminScreen').classList.remove('active');
+  document.getElementById('designerScreen').classList.add('active');
+  refreshDesignerView();
+}
+
+// ===========================================================
+// PASSWORD MODAL
+// ===========================================================
+function showPassModal(){
+  const m=document.getElementById('passModal');
+  const inp=document.getElementById('passInput');
+  const err=document.getElementById('passErr');
+  inp.value='';err.textContent='';
+  m.style.display='flex';
+  setTimeout(()=>inp.focus(),100);
+}
+function hidePassModal(){document.getElementById('passModal').style.display='none'}
+function tryAdminLogin(){
+  const inp=document.getElementById('passInput');
+  const err=document.getElementById('passErr');
+  if(inp.value===getAdminPass()){
+    hidePassModal();
+    switchToAdmin();
+  } else {
+    err.textContent='סיסמה שגויה';
+    inp.value='';inp.focus();
+  }
+}
+
+// ===========================================================
+// INIT
+// ===========================================================
+async function init(){
+  await openDB();
+  allImages=await dbGetAll();
+  // Always start in designer mode
+  document.getElementById('designerScreen').classList.add('active');
+  setupDesigner();
+}
+
+// ===========================================================
+// DESIGNER MODE
+// ===========================================================
+function setupDesigner(){
+  refreshDesignerView();
+  const genBtn=document.getElementById('generateBtn');
+  const newBtn=document.getElementById('btnNewExercise');
+  const expBtn=document.getElementById('btnExport');
+  const cpyBtn=document.getElementById('btnCopy');
+  const loginBtn=document.getElementById('adminLoginBtn');
+  // Remove old listeners by cloning
+  genBtn.replaceWith(genBtn.cloneNode(true));
+  newBtn.replaceWith(newBtn.cloneNode(true));
+  expBtn.replaceWith(expBtn.cloneNode(true));
+  cpyBtn.replaceWith(cpyBtn.cloneNode(true));
+  loginBtn.replaceWith(loginBtn.cloneNode(true));
+  document.getElementById('generateBtn').addEventListener('click',designerGenerate);
+  document.getElementById('btnNewExercise').addEventListener('click',designerGenerate);
+  document.getElementById('btnExport').addEventListener('click',exportPNG);
+  document.getElementById('btnCopy').addEventListener('click',copyText);
+  document.getElementById('adminLoginBtn').addEventListener('click',showPassModal);
+
+  // Password modal buttons
+  document.getElementById('passSubmitBtn').onclick=tryAdminLogin;
+  document.getElementById('passCancelBtn').onclick=hidePassModal;
+  document.getElementById('passInput').onkeydown=function(e){if(e.key==='Enter')tryAdminLogin()};
+  document.getElementById('passModal').onclick=function(e){if(e.target===this)hidePassModal()};
+
+  // Designer import button
+  addDesignerImport();
+}
+
+function refreshDesignerView(){
+  const empty=document.getElementById('designerEmpty');
+  const controls=document.getElementById('designerControls');
+  if(!allImages.length){empty.style.display='block';controls.style.display='none';return}
+  empty.style.display='none';controls.style.display='block';
+  populateCatSelect('catSelect');
+}
+
+function populateCatSelect(selectId){
+  const sel=document.getElementById(selectId);
+  const cats=[...new Set(allImages.map(i=>i.category))].sort();
+  while(sel.options.length>1)sel.remove(1);
+  cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o)});
+}
+
+function designerGenerate(){
+  const cat=document.getElementById('catSelect').value;
+  let pool=allImages;
+  if(cat!=='__all')pool=allImages.filter(i=>i.category===cat);
+  if(!pool.length){alert('אין תמונות בקטגוריה זו');return}
+  const img=pool[Math.floor(Math.random()*pool.length)];
+  currentImage=img;
+  const matchCat=cat==='__all'?img.category:cat;
+  currentVariations=generateVariations(matchCat);
+  selectedVariation=null;
+  displayResult('exerciseImg','exerciseCat','variationsList','exerciseResult',img,currentVariations,matchCat,true);
+}
+
+let designerImportAdded=false;
+function addDesignerImport(){
+  if(designerImportAdded)return;designerImportAdded=true;
+  const container=document.getElementById('designerScreen');
+  // Check if import area already exists
+  if(document.getElementById('designerImportBtn'))return;
+  const importArea=document.createElement('div');
+  importArea.style.cssText='text-align:center;margin-top:10px;padding-bottom:10px;';
+  importArea.innerHTML=`<button class="btn btn-ghost" id="designerImportBtn" style="font-size:11px;color:#4b5563">&#128229; ייבוא ספרייה (קובץ JSON)</button><input id="designerImportFile" type="file" accept=".json" style="display:none">`;
+  // Insert before the admin login button's parent
+  const adminBtnWrap=document.getElementById('adminLoginBtn').parentElement;
+  container.insertBefore(importArea,adminBtnWrap);
+  document.getElementById('designerImportBtn').addEventListener('click',()=>document.getElementById('designerImportFile').click());
+  document.getElementById('designerImportFile').addEventListener('change',async function(){
+    const file=this.files[0];if(!file)return;this.value='';
+    const pm=document.getElementById('progressModal'),pt=document.getElementById('progressText');
+    pm.style.display='flex';pt.textContent='קורא קובץ...';
+    try{
+      const data=JSON.parse(await file.text());
+      if(!Array.isArray(data))throw new Error('פורמט לא תקין');
+      for(let i=0;i<data.length;i++){
+        pt.textContent=`מייבא תמונה ${i+1} מתוך ${data.length}...`;
+        await dbAdd({category:data[i].category||'אחר',dataUrl:data[i].dataUrl,addedAt:data[i].addedAt||Date.now()});
+      }
+      allImages=await dbGetAll();pm.style.display='none';refreshDesignerView();
+      alert(`יובאו ${data.length} תמונות בהצלחה!`);
+    }catch(e){pm.style.display='none';alert('שגיאה: '+e.message)}
+  });
+}
+
+// ===========================================================
+// ADMIN MODE
+// ===========================================================
+function setupAdmin(){
+  refreshLibrary();
+
+  // Exit button
+  document.getElementById('adminExitBtn').onclick=switchToDesigner;
+
+  // Tabs
+  document.querySelectorAll('#adminScreen .tab-nav button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#adminScreen .tab-nav button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('#adminScreen .tab-panel').forEach(p=>p.style.display='none');
+      const tab=btn.dataset.tab;
+      document.getElementById('panel'+tab.charAt(0).toUpperCase()+tab.slice(1)).style.display='block';
+      if(tab==='library')refreshLibrary();
+      if(tab==='preview')refreshPreview();
+    });
+  });
+
+  // Drop zone
+  const dz=document.getElementById('dropZone'),fi=document.getElementById('fileInput');
+  dz.addEventListener('click',()=>fi.click());
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');handleFiles(Array.from(e.dataTransfer.files))});
+  fi.addEventListener('change',()=>{handleFiles(Array.from(fi.files));fi.value=''});
+
+  // Export library
+  document.getElementById('btnExportLibrary').addEventListener('click',exportLibrary);
+
+  // Settings: change password
+  document.getElementById('newPassInput').value=getAdminPass();
+  document.getElementById('savePassBtn').addEventListener('click',()=>{
+    const v=document.getElementById('newPassInput').value.trim();
+    if(!v){document.getElementById('passMsg').innerHTML='<span style="color:#f87171">יש להזין סיסמה</span>';return}
+    setAdminPass(v);
+    document.getElementById('passMsg').innerHTML='<span style="color:#6ee7b7">✓ הסיסמה נשמרה</span>';
+    setTimeout(()=>{document.getElementById('passMsg').textContent=''},2000);
+  });
+
+  // Clear library
+  document.getElementById('clearLibraryBtn').addEventListener('click',clearLibrary);
+
+  // Preview tab generate
+  document.getElementById('previewGenerateBtn').addEventListener('click',previewGenerate);
+}
+
+function handleFiles(files){
+  const imgs=files.filter(f=>f.type.startsWith('image/'));if(!imgs.length)return;
+  pendingFiles=imgs;showCategoryModal();
+}
+function showCategoryModal(){
+  const m=document.getElementById('catModal'),c=document.getElementById('catModalCount'),o=document.getElementById('catModalOptions');
+  c.textContent=pendingFiles.length+' תמונות נבחרו';o.innerHTML='';
+  CATEGORIES.forEach(cat=>{const b=document.createElement('button');b.className='cat-option';b.textContent=cat;b.addEventListener('click',()=>{m.style.display='none';processFiles(pendingFiles,cat)});o.appendChild(b)});
+  m.style.display='flex';m.onclick=e=>{if(e.target===m)m.style.display='none'};
+}
+async function processFiles(files,category){
+  const pm=document.getElementById('progressModal'),pt=document.getElementById('progressText');pm.style.display='flex';
+  for(let i=0;i<files.length;i++){pt.textContent=`מעבד ${i+1}/${files.length}...`;await dbAdd({category,dataUrl:await fileToDataUrl(files[i]),addedAt:Date.now()})}
+  allImages=await dbGetAll();pm.style.display='none';refreshLibrary();
+}
+function fileToDataUrl(f){return new Promise(r=>{const rd=new FileReader();rd.onload=()=>r(rd.result);rd.readAsDataURL(f)})}
+
+function refreshLibrary(){
+  const g=document.getElementById('libraryGrid'),e=document.getElementById('libraryEmpty');g.innerHTML='';
+  if(!allImages.length){e.style.display='block';document.getElementById('statTotal').textContent='0';document.getElementById('statCats').textContent='0';return}
+  e.style.display='none';document.getElementById('statTotal').textContent=allImages.length;
+  document.getElementById('statCats').textContent=new Set(allImages.map(i=>i.category)).size;
+  allImages.forEach(img=>{
+    const d=document.createElement('div');d.className='library-item';
+    d.innerHTML=`<img src="${img.dataUrl}" alt="${esc(img.category)}"><div class="cat-badge">${esc(img.category)}</div><button class="delete-btn">&times;</button>`;
+    d.querySelector('.delete-btn').addEventListener('click',async ev=>{ev.stopPropagation();await dbDelete(img.id);allImages=await dbGetAll();refreshLibrary()});
+    g.appendChild(d);
+  });
+}
+
+function refreshPreview(){
+  const e=document.getElementById('previewEmpty'),c=document.getElementById('previewContent');
+  if(!allImages.length){e.style.display='block';c.style.display='none';return}
+  e.style.display='none';c.style.display='block';populateCatSelect('previewCatSelect');
+}
+
+function previewGenerate(){
+  const cat=document.getElementById('previewCatSelect').value;
+  let pool=allImages;if(cat!=='__all')pool=allImages.filter(i=>i.category===cat);
+  if(!pool.length)return;
+  const img=pool[Math.floor(Math.random()*pool.length)];
+  const matchCat=cat==='__all'?img.category:cat;
+  const vars=generateVariations(matchCat);
+  displayResult('previewImg',null,'previewVariations','previewResult',img,vars,matchCat,false);
+}
+
+async function exportLibrary(){
+  if(!allImages.length){alert('הספרייה ריקה');return}
+  const blob=new Blob([JSON.stringify(allImages.map(i=>({category:i.category,dataUrl:i.dataUrl,addedAt:i.addedAt})))],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='image-library-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+}
+async function clearLibrary(){if(!confirm('למחוק את כל הפוסטים?'))return;await dbClear();allImages=await dbGetAll();refreshLibrary()}
+
+// ===========================================================
+// DISPLAY RESULT (shared)
+// ===========================================================
+function displayResult(imgElId,catElId,listElId,wrapElId,img,variations,catName,interactive){
+  document.getElementById(imgElId).src=img.dataUrl;
+  if(catElId)document.getElementById(catElId).textContent=catName;
+  const list=document.getElementById(listElId);list.innerHTML='';
+  variations.forEach((v,i)=>{
+    const c=document.createElement('div');c.className='variation-card';
+    c.innerHTML=`<div class="var-header"><span class="var-num">${i+1}</span><span class="var-title">${esc(v.title)}</span></div><div class="var-sub">${esc(v.subtitle)}</div><div class="var-body">${esc(v.body)}</div><div class="var-cta">${esc(v.cta)}</div>${v.fine_print?`<div class="var-fine">${esc(v.fine_print)}</div>`:''}`;
+    if(interactive)c.addEventListener('click',()=>selectVariation(i));
+    list.appendChild(c);
+  });
+  const w=document.getElementById(wrapElId);w.style.display='block';w.classList.remove('fade-in');void w.offsetWidth;w.classList.add('fade-in');
+  w.scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(interactive){document.getElementById('btnExport').disabled=true;document.getElementById('btnCopy').disabled=true}
+}
+
+function selectVariation(i){
+  selectedVariation=currentVariations[i];
+  document.querySelectorAll('#variationsList .variation-card').forEach((c,j)=>c.classList.toggle('selected',j===i));
+  document.getElementById('btnExport').disabled=false;document.getElementById('btnCopy').disabled=false;
+  fillExportCard();
+}
+function fillExportCard(){
+  if(!selectedVariation||!currentImage)return;
+  document.getElementById('exportImg').src=currentImage.dataUrl;
+  document.getElementById('exportTitle').textContent=selectedVariation.title;
+  document.getElementById('exportSubtitle').textContent=selectedVariation.subtitle;
+  document.getElementById('exportBody').textContent=selectedVariation.body;
+  document.getElementById('exportCta').textContent=selectedVariation.cta;
+  const fw=document.getElementById('exportFineWrap'),fe=document.getElementById('exportFine');
+  if(selectedVariation.fine_print){fe.textContent=selectedVariation.fine_print;fw.style.display='block'}else{fw.style.display='none'}
+}
+
+// ===========================================================
+// EXPORT PNG
+// ===========================================================
+async function exportPNG(){
+  if(!selectedVariation)return;fillExportCard();
+  const btn=document.getElementById('btnExport');btn.disabled=true;btn.textContent='מייצא...';
+  try{
+    const el=document.getElementById('exportCard'),p=document.getElementById('exportPreview');
+    p.style.position='fixed';p.style.left='0';p.style.top='0';p.style.zIndex='-1';p.style.opacity='0.01';
+    const img=document.getElementById('exportImg');if(!img.complete)await new Promise(r=>{img.onload=r});
+    const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#0a0a0a',width:480,logging:false});
+    p.style.position='absolute';p.style.left='-9999px';p.style.opacity='';p.style.zIndex='';
+    const a=document.createElement('a');a.download='exercise-'+Date.now()+'.png';a.href=canvas.toDataURL('image/png');a.click();
+  }catch(e){alert('שגיאה: '+e.message)}
+  finally{btn.disabled=false;btn.innerHTML='&#128229; ייצוא PNG'}
+}
+
+// ===========================================================
+// COPY TEXT
+// ===========================================================
+function copyText(){
+  if(!selectedVariation)return;const v=selectedVariation;
+  const t=[`כותרת: ${v.title}`,`תת כותרת: ${v.subtitle}`,`מלל רץ: ${v.body}`,`הנעה לפעולה: ${v.cta}`,v.fine_print?`אותיות קטנות: ${v.fine_print}`:''
+  ].filter(Boolean).join('\n');
+  navigator.clipboard.writeText(t).then(()=>{
+    const b=document.getElementById('btnCopy');b.textContent='✓ הועתק!';b.classList.add('copied');
+    setTimeout(()=>{b.innerHTML='&#128203; העתקת מלל';b.classList.remove('copied')},1500);
+  });
+}
+
+function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+// START
+init();
+</script>
+</body>
+</html>
