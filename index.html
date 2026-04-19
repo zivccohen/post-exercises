@@ -10,7 +10,11 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Heebo',sans-serif}
 body{background:linear-gradient(160deg,#0d0d0d 0%,#1a1919 50%,#111111 100%);min-height:100vh;direction:rtl;color:#e5e7eb}
-.container{max-width:520px;margin:0 auto;padding:16px}
+.container{max-width:960px;margin:0 auto;padding:16px}
+.exercise-layout{display:flex;gap:20px;align-items:flex-start}
+.exercise-col-img{flex:0 0 45%;position:sticky;top:16px}
+.exercise-col-text{flex:1;min-width:0}
+@media(max-width:700px){.exercise-layout{flex-direction:column}.exercise-col-img{position:static;flex:none;width:100%}}
 .gradient-text{background:linear-gradient(135deg,#e8b87a,#c8853a);-webkit-background-clip:text;background-clip:text;color:transparent}
 .card{background:#1c1a17;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.4);margin-bottom:14px;border:1px solid #2e2b25}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;transition:all .2s}
@@ -110,6 +114,7 @@ textarea:focus{outline:none;border-color:#c8853a;box-shadow:0 0 0 3px rgba(200,1
 
 <!-- ===================== DESIGNER VIEW (default) ===================== -->
 <div id="designerScreen" class="screen container">
+  <div style="max-width:520px;margin:0 auto">
   <div style="text-align:center;margin-bottom:18px;padding-top:8px">
     <h1 class="gradient-text" style="font-size:26px;font-weight:900">&#127912; תרגיל עיצוב פוסט</h1>
     <p style="color:#6b7280;font-size:13px;margin-top:4px">בחרו קטגוריה ולחצו ליצירת תרגיל</p>
@@ -133,24 +138,32 @@ textarea:focus{outline:none;border-color:#c8853a;box-shadow:0 0 0 3px rgba(200,1
         &#128640; יצירת תרגיל חדש
       </button>
     </div>
+  </div><!-- /designerControls -->
+  </div><!-- /520px wrapper -->
 
-    <!-- Result -->
-    <div id="exerciseResult" style="display:none" class="fade-in">
-      <div class="exercise-image"><img id="exerciseImg" src="" alt="תמונת מודעה"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <h3 style="font-size:15px;font-weight:700;color:#f3f4f6">&#9997;&#65039; כתבו מלל חדש לפי ההנחיות:</h3>
-        <span id="exerciseCat" style="font-size:12px;color:#a78bfa;font-weight:600;background:rgba(124,58,237,.15);padding:2px 10px;border-radius:20px"></span>
+  <!-- Result - full width (960px) -->
+  <div id="exerciseResult" style="display:none" class="fade-in">
+    <div class="exercise-layout">
+      <!-- עמודה ימין - תמונה -->
+      <div class="exercise-col-img">
+        <div class="exercise-image"><img id="exerciseImg" src="" alt="תמונת מודעה"></div>
+        <div style="margin-top:10px">
+          <span id="exerciseCat" style="font-size:12px;color:#e8b87a;font-weight:600;background:rgba(200,133,58,.15);padding:2px 10px;border-radius:20px"></span>
+        </div>
       </div>
-      <div id="variationsList"></div>
-      <div style="margin-top:14px">
-        <button id="btnCopy" class="btn btn-outline btn-block" disabled>&#128203; העתקת מלל</button>
-      </div>
-      <div style="text-align:center;margin-top:10px">
-        <button id="btnNewExercise" class="btn btn-ghost">&#128260; תרגיל נוסף</button>
+      <!-- עמודה שמאל - מלל -->
+      <div class="exercise-col-text">
+        <h3 style="font-size:15px;font-weight:700;color:#f3f4f6;margin-bottom:12px">&#9997;&#65039; כתבו מלל חדש לפי ההנחיות:</h3>
+        <div id="variationsList"></div>
+        <div style="margin-top:14px">
+          <button id="btnCopy" class="btn btn-outline btn-block" disabled>&#128203; העתקת מלל</button>
+        </div>
+        <div style="text-align:center;margin-top:10px">
+          <button id="btnNewExercise" class="btn btn-ghost">&#128260; תרגיל נוסף</button>
+        </div>
       </div>
     </div>
   </div>
-
   <!-- Admin login button -->
   <div style="text-align:center;margin-top:30px;padding-bottom:20px">
     <button id="adminLoginBtn" class="btn btn-ghost" style="font-size:12px;color:#4b5563">&#128274; כניסת מנהלים</button>
