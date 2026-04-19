@@ -52,6 +52,12 @@ input[type="password"]:focus,input[type="text"]:focus{outline:none;border-color:
 .var-body{font-size:13px;color:#d1d5db;line-height:1.5;margin-bottom:2px}
 .var-cta{font-size:13px;color:#f0d0a0;font-weight:600}
 .var-fine{font-size:11px;color:#6b7280}
+.timer-box{text-align:center;background:#111;border:2px solid #2e2b25;border-radius:16px;padding:14px 20px;margin-bottom:14px}
+.timer-display{font-size:52px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px;color:#e8b87a;line-height:1;transition:color .3s}
+.timer-display.warning{color:#fb923c}
+.timer-display.danger{color:#f87171;animation:pulse 1s infinite}
+.timer-label{font-size:11px;color:#6b7280;margin-top:4px;margin-bottom:8px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 .library-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .library-item{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;cursor:pointer;border:2px solid transparent;transition:all .2s}
 .library-item:hover{border-color:#c8853a}
@@ -153,6 +159,15 @@ textarea:focus{outline:none;border-color:#c8853a;box-shadow:0 0 0 3px rgba(200,1
       </div>
       <!-- עמודה שמאל - מלל -->
       <div class="exercise-col-text">
+        <!-- טיימר -->
+        <div class="timer-box">
+          <div id="timerDisplay" class="timer-display" style="color:#4b5563">05:00</div>
+          <div class="timer-label">לחצו על הכפתור כשאתם מוכנים</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <button id="timerStartBtn" class="btn btn-primary" style="font-size:14px;padding:10px 20px">&#9654; נתח את הפוסט</button>
+            <button id="timerRestartBtn" class="btn btn-ghost" style="font-size:12px;padding:10px 14px;display:none">&#8635; מחדש</button>
+          </div>
+        </div>
         <h3 style="font-size:15px;font-weight:700;color:#f3f4f6;margin-bottom:12px">&#9997;&#65039; כתבו מלל חדש לפי ההנחיות:</h3>
         <div id="variationsList"></div>
         <div style="margin-top:14px">
@@ -240,6 +255,15 @@ textarea:focus{outline:none;border-color:#c8853a;box-shadow:0 0 0 3px rgba(200,1
 
   <!-- TAB: Settings -->
   <div id="panelSettings" class="tab-panel" style="display:none">
+    <div class="card">
+      <h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:#f3f4f6">&#9203; טיימר תרגיל</h2>
+      <label for="timerDurationInput">משך הטיימר (דקות):</label>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+        <input id="timerDurationInput" type="number" min="1" max="60" value="5" dir="ltr" style="width:80px">
+        <button id="saveTimerBtn" class="btn btn-primary" style="font-size:14px;padding:10px 18px">&#128190; שמור</button>
+        <span id="timerMsg" style="font-size:12px;min-height:20px"></span>
+      </div>
+    </div>
     <div class="card">
       <h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:#f3f4f6">&#129302; Claude API - מלל חכם</h2>
       <p style="font-size:13px;color:#6b7280;margin-bottom:10px">עם מפתח API הבינה תקרא את הפוסט אוטומטית ותייצר מלל מדויק</p>
@@ -562,12 +586,13 @@ async function generateWithAPI(img){
 - כפתור קריאה לפעולה כמו "לחץ כאן", "התקשר עכשיו" וכו' (cta)
 - הערות קטנות בתחתית כמו "ט.ל.ח" (fine_print)
 
-שלב 2 - צור 3 וריאציות לפי הכללים:
-- העתק את הטקסט המקורי כמעט מילה במילה
-- שנה רק מספרים (מחיר, אחוז, תאריך, כמות) בשינוי קטן של ±5-10%
-- אל תשנה שמות, עיר, מותג, סגנון, מילות מפתח
-- אם אין מספרים - הוסף/שנה מספר קטן אחד בלבד
-- וריאציה 2 יכולה להיות זהה לחלוטין לטקסט המקורי
+שלב 2 - צור 3 וריאציות שונות בכ-20% מהמקור:
+- שמור על אותו מוצר/שירות, מיקום, מותג ומסר כללי
+- שנה מספרים (מחיר, אחוז, כמות) בשינוי של ±10-20%
+- החלף מילים במילים נרדפות (למשל: "מהמם"↔"מדהים", "מיידי"↔"מהיר", "נדיר"↔"ייחודי")
+- שנה ניסוח של משפטים: "קבלו דירה X" → "דירת X מחכה לכם"
+- שנה פועלים ותארים תוך שמירה על אותה משמעות
+- כל וריאציה תהיה שונה מהאחרות (לא רק במספרים)
 
 החזר JSON בלבד, ללא הסברים, ללא markdown:
 [{"title":"...","subtitle":"...","body":"...","cta":"...","fine_print":""},{"title":"...","subtitle":"...","body":"...","cta":"...","fine_print":""},{"title":"...","subtitle":"...","body":"...","cta":"...","fine_print":""}]`;
@@ -868,6 +893,17 @@ function setupAdmin(){
     setTimeout(()=>{document.getElementById('passMsg').textContent=''},2000);
   });
 
+  // Timer duration
+  const savedDur=getTimerDuration();
+  document.getElementById('timerDurationInput').value=Math.round(savedDur/60);
+  document.getElementById('saveTimerBtn').addEventListener('click',()=>{
+    const mins=parseInt(document.getElementById('timerDurationInput').value)||5;
+    localStorage.setItem('timerDuration',String(mins*60));
+    const msg=document.getElementById('timerMsg');
+    msg.innerHTML='<span style="color:#6ee7b7">✓ נשמר</span>';
+    setTimeout(()=>{msg.textContent=''},2000);
+  });
+
   // API Key
   const savedKey=localStorage.getItem('claudeApiKey')||'';
   if(savedKey)document.getElementById('apiKeyInput').value=savedKey;
@@ -978,6 +1014,37 @@ async function exportLibrary(){
 async function clearLibrary(){if(!confirm('למחוק את כל הפוסטים?'))return;await dbClear();allImages=await dbGetAll();refreshLibrary()}
 
 // ===========================================================
+// TIMER
+// ===========================================================
+let timerInterval=null;
+function getTimerDuration(){return parseInt(localStorage.getItem('timerDuration')||'300');}
+function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function startTimer(){
+  if(timerInterval)clearInterval(timerInterval);
+  const el=document.getElementById('timerDisplay');
+  if(!el)return;
+  let s=getTimerDuration();
+  el.textContent=formatTime(s);
+  el.className='timer-display';
+  el.style.color='';
+  timerInterval=setInterval(()=>{
+    s--;
+    if(s<=0){clearInterval(timerInterval);el.textContent='⏰ הזמן נגמר!';el.className='timer-display danger';return;}
+    el.textContent=formatTime(s);
+    el.className='timer-display'+(s<=30?' danger':s<=60?' warning':'');
+  },1000);
+}
+document.addEventListener('click',e=>{
+  if(e.target.id==='timerStartBtn'||e.target.id==='timerRestartBtn'){
+    startTimer();
+    const sb=document.getElementById('timerStartBtn');
+    const rb=document.getElementById('timerRestartBtn');
+    if(sb)sb.style.display='none';
+    if(rb)rb.style.display='';
+  }
+});
+
+// ===========================================================
 // DISPLAY RESULT (shared)
 // ===========================================================
 function displayResult(imgElId,catElId,listElId,wrapElId,img,variations,catName,interactive){
@@ -992,7 +1059,14 @@ function displayResult(imgElId,catElId,listElId,wrapElId,img,variations,catName,
   });
   const w=document.getElementById(wrapElId);w.style.display='block';w.classList.remove('fade-in');void w.offsetWidth;w.classList.add('fade-in');
   w.scrollIntoView({behavior:'smooth',block:'nearest'});
-  if(interactive){document.getElementById('btnCopy').disabled=true}
+  if(interactive){
+    document.getElementById('btnCopy').disabled=true;
+    if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+    const td=document.getElementById('timerDisplay');
+    if(td){td.textContent=formatTime(getTimerDuration());td.className='timer-display';td.style.color='#4b5563';}
+    const sb=document.getElementById('timerStartBtn');const rb=document.getElementById('timerRestartBtn');
+    if(sb)sb.style.display='';if(rb)rb.style.display='none';
+  }
 }
 
 function selectVariation(i){
