@@ -161,9 +161,9 @@ textarea:focus{outline:none;border-color:#c8853a;box-shadow:0 0 0 3px rgba(200,1
       <div class="exercise-col-text">
         <!-- טיימר -->
         <div class="timer-box">
-          <div id="timerDisplay" class="timer-display" style="color:#4b5563">05:00</div>
-          <div class="timer-label">לחצו על הכפתור כשאתם מוכנים</div>
-          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+          <div id="timerDisplay" class="timer-display" style="display:none"></div>
+          <div id="timerLabel" class="timer-label" style="display:none">זמן לתרגיל</div>
+          <div style="display:flex;gap:8px;justify-content:center">
             <button id="timerStartBtn" class="btn btn-primary" style="font-size:14px;padding:10px 20px">&#9654; נתח את הפוסט</button>
             <button id="timerRestartBtn" class="btn btn-ghost" style="font-size:12px;padding:10px 14px;display:none">&#8635; מחדש</button>
           </div>
@@ -586,13 +586,14 @@ async function generateWithAPI(img){
 - כפתור קריאה לפעולה כמו "לחץ כאן", "התקשר עכשיו" וכו' (cta)
 - הערות קטנות בתחתית כמו "ט.ל.ח" (fine_print)
 
-שלב 2 - צור 3 וריאציות שונות בכ-20% מהמקור:
-- שמור על אותו מוצר/שירות, מיקום, מותג ומסר כללי
-- שנה מספרים (מחיר, אחוז, כמות) בשינוי של ±10-20%
-- החלף מילים במילים נרדפות (למשל: "מהמם"↔"מדהים", "מיידי"↔"מהיר", "נדיר"↔"ייחודי")
-- שנה ניסוח של משפטים: "קבלו דירה X" → "דירת X מחכה לכם"
-- שנה פועלים ותארים תוך שמירה על אותה משמעות
-- כל וריאציה תהיה שונה מהאחרות (לא רק במספרים)
+שלב 2 - צור 3 וריאציות שונות בכ-50% מהמקור (כמו כתיבה מחדש חלקית):
+- שמור על אותו מוצר/שירות, מיקום, מותג ורעיון מרכזי
+- שנה מספרים (מחיר, אחוז, כמות) בשינוי של ±15-25%
+- שנה את מבנה המשפטים לחלוטין תוך שמירה על המסר
+- החלף מילות מפתח בביטויים שיווקיים אחרים עם אותה משמעות
+- שנה את הטון: וריאציה 1 - רשמית, וריאציה 2 - חמה/אישית, וריאציה 3 - נמרצת/דחופה
+- הוסף/הסר פרטים שניוניים, שנה סדר מידע
+- כל וריאציה תרגיש כאילו כתב אדם אחר על אותו נושא
 
 החזר JSON בלבד, ללא הסברים, ללא markdown:
 [{"title":"...","subtitle":"...","body":"...","cta":"...","fine_print":""},{"title":"...","subtitle":"...","body":"...","cta":"...","fine_print":""},{"title":"...","subtitle":"...","body":"...","cta":"...","fine_print":""}]`;
@@ -1039,8 +1040,12 @@ document.addEventListener('click',e=>{
     startTimer();
     const sb=document.getElementById('timerStartBtn');
     const rb=document.getElementById('timerRestartBtn');
+    const td=document.getElementById('timerDisplay');
+    const tl=document.getElementById('timerLabel');
     if(sb)sb.style.display='none';
     if(rb)rb.style.display='';
+    if(td)td.style.display='';
+    if(tl)tl.style.display='';
   }
 });
 
@@ -1063,7 +1068,8 @@ function displayResult(imgElId,catElId,listElId,wrapElId,img,variations,catName,
     document.getElementById('btnCopy').disabled=true;
     if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
     const td=document.getElementById('timerDisplay');
-    if(td){td.textContent=formatTime(getTimerDuration());td.className='timer-display';td.style.color='#4b5563';}
+    if(td){td.style.display='none';td.className='timer-display';}
+    const tl=document.getElementById('timerLabel');if(tl)tl.style.display='none';
     const sb=document.getElementById('timerStartBtn');const rb=document.getElementById('timerRestartBtn');
     if(sb)sb.style.display='';if(rb)rb.style.display='none';
   }
